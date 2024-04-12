@@ -1,113 +1,114 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-        >
-          Core Docs
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
-      </li>
-      <br>
-      <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
-      </li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
-      </li>
-    </ul>
+  <div class="calculadora">
+    <div class="display">{{valorActual || '0'}}</div>
+    <div @click="limpiar" class="button">C</div>
+    <div @click="signo" class="button">+/-</div>
+    <div @click="porcentaje" class="button">%</div>
+    <div @click="dividir" class="button operator">÷</div>
+    <div @click="juntarNumeros('7')" class="button">7</div>
+    <div @click="juntarNumeros('8')" class="button">8</div>
+    <div @click="juntarNumeros('9')" class="button">9</div>
+    <div @click="multiplicar" class="button operator">x</div>
+    <div @click="juntarNumeros('4')" class="button">4</div>
+    <div @click="juntarNumeros('5')" class="button">5</div>
+    <div @click="juntarNumeros('6')" class="button">6</div>
+    <div @click="restar" class="button operator">-</div>
+    <div @click="juntarNumeros('1')" class="button">1</div>
+    <div @click="juntarNumeros('2')" class="button">2</div>
+    <div @click="juntarNumeros('3')" class="button">3</div>
+    <div @click="sumar" class="button operator">+</div>
+    <div @click="juntarNumeros('0')" class="button zero">0</div>
+    <div @click="punto" class="button">.</div>
+    <div @click="resultado" class="button operator"> = </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
   data() {
     return {
-      msg: 'Welcome to Your Vue.js App',
-    };
+      valorActual: '0',
+      numeroAnterior: null,
+      operador: null
+    }
   },
-};
+  methods: {
+    limpiar() {
+      this.valorActual = '0'
+    },
+    signo() {
+      this.valorActual = this.valorActual.charAt(0) === '-' ? this.valorActual.slice(1) : `-${this.valorActual}`
+    },
+    porcentaje() {
+      this.valorActual = `${parseFloat(this.valorActual) / 100}`
+    },
+    juntarNumeros(numero) {
+      if (this.operador) {
+        this.valorActual = '';
+        this.operador = false;
+      }
+      this.valorActual = `${this.valorActual}${numero}`;
+    },
+    punto() {
+      if (this.valorActual.indexOf('.') === -1) {
+        this.juntarNumeros('.')
+      }
+    },
+    establecerValor() {
+      this.numeroAnterior = this.valorActual;
+      this.operador = true;
+    },
+    resultado() {
+      this.valorActual = `${this.operador(
+        parseFloat(this.numeroAnterior),
+        parseFloat(this.valorActual)
+      )}`
+      this.numeroAnterior = null
+    },
+    dividir() {
+      this.operador = (num1, num2) => num1 / num2
+      this.establecerValor()
+    },
+    multiplicar() {
+      this.operador = (num1, num2) => num1 * num2
+      this.establecerValor()
+    },
+    restar() {
+      this.operador = (num1, num2) => num1 - num2
+      this.establecerValor()
+    },
+    sumar() {
+      this.operador = (num1, num2) => num1 + num2
+      this.establecerValor()
+    },
+  }
+}
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
+.calculadora {
+  margin: 0 auto;
+  width: 350px;
+  font-size: 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(50px, auto);
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+.display {
+  grid-column: 1 / 5;
+  background-color: #333;
+  color: white;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+.zero {
+  grid-column: 1 / 3;
 }
-a {
-  color: #42b983;
+.button {
+  background-color: #f2f2f2;
+  border: 1px solid #999;
+  cursor: pointer;
+}
+.operator {
+  background-color: orange;
+  color: white;
 }
 </style>
